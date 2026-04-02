@@ -22,12 +22,15 @@
         .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 20px; }
 
         .brand-logo { font-size: 1.1rem; color: var(--primary); font-weight: 800; cursor: default; user-select: none; }
-        .nav-filters { display: flex; align-items: center; gap: 10px; }
-        .filter-select { padding: 8px 12px; border-radius: 10px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; cursor: pointer; font-size: 0.8rem; outline: none; }
+        .nav-filters { display: flex; align-items: center; gap: 8px; }
+        .filter-select { padding: 8px 10px; border-radius: 10px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; cursor: pointer; font-size: 0.8rem; outline: none; }
+        
+        /* New Year Input Style */
+        .year-input-nav { width: 70px; padding: 8px; border-radius: 10px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; font-size: 0.8rem; text-align: center; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: var(--card-bg); padding: 1.5rem; border-radius: 24px; text-align: center; border: 1px solid var(--border); }
-        .stat-card h3 { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .stat-card h3 { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
         .stat-card .value { font-size: 1.5rem; font-weight: 800; }
 
         .journal-box { background: var(--card-bg); border-radius: 24px; padding: 1.5rem; border: 1px solid var(--border); overflow-x: auto; }
@@ -43,10 +46,10 @@
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 25px; width: 90%; max-width: 400px; border: 1px solid var(--border); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 600; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 600; outline: none; }
         .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
         
-        #auth-section { display: none; } /* Admin icon default hidden */
+        #auth-section { display: none; }
         .admin-only { display: none; }
     </style>
 </head>
@@ -66,10 +69,7 @@
                     <option value="Oct">Oct</option><option value="Nov">Nov</option><option value="Dec">Dec</option>
                 </select>
 
-                <select id="yearFilter" class="filter-select" onchange="renderData()">
-                    <option value="2025">2025</option><option value="2026" selected>2026</option>
-                    <option value="2027">2027</option>
-                </select>
+                <input type="number" id="yearFilter" class="year-input-nav" value="2026" onchange="renderData()">
 
                 <div id="auth-section"></div>
             </div>
@@ -109,6 +109,7 @@
         <div class="modal-content">
             <h2 style="margin-bottom:15px; font-size:1.1rem">New Trade Entry</h2>
             <input type="text" id="coinInput" placeholder="BTC/USDT">
+            
             <div style="display: flex; gap: 10px;">
                 <select id="monthInput">
                     <option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option>
@@ -116,13 +117,15 @@
                     <option value="Jul">Jul</option><option value="Aug">Aug</option><option value="Sep">Sep</option>
                     <option value="Oct">Oct</option><option value="Nov">Nov</option><option value="Dec">Dec</option>
                 </select>
-                <select id="yearInput"><option value="2025">2025</option><option value="2026" selected>2026</option></select>
+                <input type="number" id="yearInput" placeholder="Year (e.g. 2026)">
             </div>
+
             <div style="display: flex; gap: 10px;">
                 <select id="sideInput"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
                 <input type="text" id="levInput" placeholder="Leverage (e.g. 20x)">
             </div>
             <input type="number" id="investInput" placeholder="Investment $">
+            
             <div style="display: flex; gap: 10px;">
                 <select id="resultInput"><option value="WIN">WIN</option><option value="LOSS">LOSS</option></select>
                 <input type="number" id="pnlInput" placeholder="PnL %">
@@ -153,25 +156,18 @@
             const now = new Date();
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             document.getElementById('monthFilter').value = months[now.getMonth()];
+            document.getElementById('yearFilter').value = now.getFullYear();
+            
+            // Modal defaults
             document.getElementById('monthInput').value = months[now.getMonth()];
+            document.getElementById('yearInput').value = now.getFullYear();
         };
 
-        // Secret Login Trigger
         function handleSecretLogin() { if (!auth.currentUser) auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
-
-        // Mobile Long Press Logic
-        let pressTimer;
-        document.getElementById('logo-text').addEventListener('touchstart', () => {
-            pressTimer = window.setTimeout(handleSecretLogin, 1000);
-        });
-        document.getElementById('logo-text').addEventListener('touchend', () => clearTimeout(pressTimer));
-
-        function logout() { if(confirm("Logout?")) auth.signOut(); }
 
         auth.onAuthStateChanged(user => {
             const isAdmin = user && user.email === _admin;
             const authDiv = document.getElementById('auth-section');
-            
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
             document.querySelectorAll('th.admin-only, td.admin-only').forEach(el => el.style.display = isAdmin ? 'table-cell' : 'none');
             
@@ -244,7 +240,7 @@
             const entryMonth = document.getElementById('monthInput').value;
             const entryYear = document.getElementById('yearInput').value;
 
-            if(!coin || isNaN(invest) || isNaN(pnl)) return alert("Fill all fields!");
+            if(!coin || !entryYear || isNaN(invest) || isNaN(pnl)) return alert("Sob puron korun!");
             if(res==='LOSS' && pnl > 0) pnl = -pnl;
 
             document.getElementById('saveBtn').innerText = "SAVING...";
@@ -256,6 +252,7 @@
         function delTrade(id) { if(confirm("Delete trade?")) db.ref('trades/' + id).remove(); }
         function openModal() { document.getElementById('tradeModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('tradeModal').style.display = 'none'; }
+        function logout() { if(confirm("Logout?")) auth.signOut(); }
         function toggleTheme() {
             const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', theme);
