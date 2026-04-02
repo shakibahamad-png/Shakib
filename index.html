@@ -21,6 +21,7 @@
         nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .container { max-width: 1200px; margin: 1.5rem auto; padding: 0 20px; }
 
+        .brand-logo { font-size: 1.1rem; color: var(--primary); font-weight: 800; cursor: default; user-select: none; }
         .nav-filters { display: flex; align-items: center; gap: 10px; }
         .filter-select { padding: 8px 12px; border-radius: 10px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; cursor: pointer; font-size: 0.8rem; outline: none; }
 
@@ -45,7 +46,7 @@
         input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 600; }
         .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
         
-        .login-btn-nav { background: var(--primary); color: white; padding: 6px 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        #auth-section { display: none; } /* Admin icon default hidden */
         .admin-only { display: none; }
     </style>
 </head>
@@ -53,20 +54,24 @@
 
     <div id="main-app">
         <nav>
-            <h2 style="font-size: 1.1rem; color:var(--primary); font-weight:800;">SHAKIB JOURNAL</h2>
+            <h2 class="brand-logo" id="logo-text" ondblclick="handleSecretLogin()">SHAKIB JOURNAL</h2>
+            
             <div class="nav-filters">
                 <span class="material-icons-round" style="cursor:pointer; color:var(--primary)" onclick="toggleTheme()" id="theme-icon">light_mode</span>
+                
                 <select id="monthFilter" class="filter-select" onchange="renderData()">
                     <option value="Jan">Jan</option><option value="Feb">Feb</option><option value="Mar">Mar</option>
                     <option value="Apr">Apr</option><option value="May">May</option><option value="Jun">Jun</option>
                     <option value="Jul">Jul</option><option value="Aug">Aug</option><option value="Sep">Sep</option>
                     <option value="Oct">Oct</option><option value="Nov">Nov</option><option value="Dec">Dec</option>
                 </select>
+
                 <select id="yearFilter" class="filter-select" onchange="renderData()">
-                    <option value="2024">2024</option><option value="2025">2025</option>
-                    <option value="2026" selected>2026</option><option value="2027">2027</option>
+                    <option value="2025">2025</option><option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
                 </select>
-                <div id="auth-section"><button class="login-btn-nav" onclick="login()">ADMIN LOGIN</button></div>
+
+                <div id="auth-section"></div>
             </div>
         </nav>
 
@@ -74,7 +79,7 @@
             <div class="stats-grid">
                 <div class="stat-card"><h3>Monthly Trades</h3><div class="value" id="s-count">0</div></div>
                 <div class="stat-card"><h3>Win Rate</h3><div class="value" id="s-rate" style="color:var(--success)">0%</div></div>
-                <div class="stat-card admin-only"><h3>Total Invested</h3><div class="value" id="s-invest">$0</div></div>
+                <div class="stat-card admin-only" id="invest-stat"><h3>Total Invested</h3><div class="value" id="s-invest">$0</div></div>
                 <div class="stat-card"><h3>Monthly PnL %</h3><div class="value" id="s-profit-pct">0%</div></div>
             </div>
 
@@ -96,6 +101,7 @@
                 </table>
             </div>
         </div>
+
         <div class="fab" id="fab-btn" onclick="openModal()"><span class="material-icons-round">add</span></div>
     </div>
 
@@ -150,16 +156,35 @@
             document.getElementById('monthInput').value = months[now.getMonth()];
         };
 
-        function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        // Secret Login Trigger
+        function handleSecretLogin() { if (!auth.currentUser) auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+
+        // Mobile Long Press Logic
+        let pressTimer;
+        document.getElementById('logo-text').addEventListener('touchstart', () => {
+            pressTimer = window.setTimeout(handleSecretLogin, 1000);
+        });
+        document.getElementById('logo-text').addEventListener('touchend', () => clearTimeout(pressTimer));
+
         function logout() { if(confirm("Logout?")) auth.signOut(); }
 
         auth.onAuthStateChanged(user => {
             const isAdmin = user && user.email === _admin;
+            const authDiv = document.getElementById('auth-section');
+            
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
             document.querySelectorAll('th.admin-only, td.admin-only').forEach(el => el.style.display = isAdmin ? 'table-cell' : 'none');
-            document.getElementById('auth-section').innerHTML = isAdmin ? `<img src="${user.photoURL}" style="width:35px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="logout()">` : `<button class="login-btn-nav" onclick="login()">ADMIN LOGIN</button>`;
-            document.getElementById('fab-btn').style.display = isAdmin ? 'flex' : 'none';
-            document.getElementById('th-action').style.display = isAdmin ? 'table-cell' : 'none';
+            
+            if (isAdmin) {
+                authDiv.style.display = 'block';
+                authDiv.innerHTML = `<img src="${user.photoURL}" style="width:35px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="logout()">`;
+                document.getElementById('fab-btn').style.display = 'flex';
+                document.getElementById('th-action').style.display = 'table-cell';
+            } else {
+                authDiv.style.display = 'none';
+                document.getElementById('fab-btn').style.display = 'none';
+                document.getElementById('th-action').style.display = 'none';
+            }
             renderData();
         });
 
@@ -178,7 +203,7 @@
             tbody.innerHTML = '';
             
             let mInv = 0, mTotalPnlPct = 0, wins = 0, count = 0;
-            const filtered = trades.filter(t => t.period === target); // Sorted by SL (oldest to newest)
+            const filtered = trades.filter(t => t.period === target);
 
             filtered.forEach((t, index) => {
                 const isWin = t.result === 'WIN';
@@ -186,10 +211,7 @@
                 const inv = parseFloat(t.invest) || 0;
                 const profitVal = (inv * (pnlPct / 100));
                 
-                if(isWin) wins++; 
-                mInv += inv; 
-                mTotalPnlPct += pnlPct;
-                count++;
+                if(isWin) wins++; mInv += inv; mTotalPnlPct += pnlPct; count++;
 
                 tbody.innerHTML += `
                     <tr>
@@ -212,7 +234,7 @@
         }
 
         function saveTrade() {
-            if(!auth.currentUser || auth.currentUser.email !== _admin) return alert("Unauthorized!");
+            if(!auth.currentUser || auth.currentUser.email !== _admin) return;
             const coin = document.getElementById('coinInput').value.toUpperCase();
             const lev = document.getElementById('levInput').value || '1x';
             const invest = parseFloat(document.getElementById('investInput').value);
