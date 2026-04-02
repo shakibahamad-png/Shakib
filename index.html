@@ -32,23 +32,23 @@
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: var(--card-bg); padding: 1.2rem; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .stat-card .value { font-size: 1.4rem; font-weight: 800; margin-top: 5px; }
+        .stat-card .value { font-size: 1.2rem; font-weight: 800; margin-top: 5px; }
 
         .journal-box { background: var(--card-bg); border-radius: 24px; padding: 1.5rem; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { text-align: left; padding: 12px; color: var(--text-dim); border-bottom: 2px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); }
+        th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.8rem; border-bottom: 2px solid var(--border); }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         .win { background: #d1fae5; color: var(--success); }
         .loss { background: #fee2e2; color: var(--danger); }
 
         .year-select { padding: 8px; border-radius: 8px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; }
-        .fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); }
+        .fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
         .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 25px; width: 90%; max-width: 400px; border: 1px solid var(--border); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); font-weight: 600; }
         .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
     </style>
 </head>
@@ -57,10 +57,10 @@
     <div id="login-overlay">
         <div class="login-box">
             <h1>Shakib's Journal</h1>
-            <p>Manage your trades securely</p>
+            <p style="margin-bottom: 20px;">Login to view trading stats</p>
             <button class="google-btn" onclick="login()">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18">
-                Login with Google
+                Sign in with Google
             </button>
         </div>
     </div>
@@ -87,28 +87,28 @@
             </div>
             <div class="journal-box">
                 <table>
-                    <thead><tr><th>Coin & Lev</th><th>Side</th><th>Investment</th><th>Result</th><th>PnL%</th><th>Profit</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Coin & Lev</th><th>Side</th><th>Investment</th><th>Result</th><th>PnL%</th><th>Profit</th><th id="th-action">Action</th></tr></thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </div>
-        <div class="fab" onclick="openModal()"><span class="material-icons-round">add</span></div>
+        <div class="fab" id="fab-btn" onclick="openModal()"><span class="material-icons-round">add</span></div>
     </div>
 
     <div class="modal" id="tradeModal">
         <div class="modal-content">
-            <h2 style="margin-bottom:15px">New Trade Entry</h2>
+            <h2 style="margin-bottom:15px">New Entry</h2>
             <input type="text" id="coinInput" placeholder="BTC/USDT">
             <div style="display: flex; gap: 10px;">
                 <select id="sideInput"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
-                <input type="text" id="levInput" placeholder="Lev (20x)">
+                <input type="text" id="levInput" placeholder="Lev (e.g. 20x)">
             </div>
-            <input type="number" id="investInput" placeholder="Invest $">
+            <input type="number" id="investInput" placeholder="Investment $">
             <div style="display: flex; gap: 10px;">
                 <select id="resultInput"><option value="WIN">WIN</option><option value="LOSS">LOSS</option></select>
                 <input type="number" id="pnlInput" placeholder="PnL %">
             </div>
-            <button id="saveBtn" class="btn-save" onclick="saveTrade()">Add Trade</button>
+            <button id="saveBtn" class="btn-save" onclick="saveTrade()">SAVE TRADE</button>
             <button onclick="closeModal()" style="width:100%; border:none; background:none; margin-top:10px; cursor:pointer; color:var(--text-dim);">Cancel</button>
         </div>
     </div>
@@ -142,6 +142,12 @@
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
                 document.getElementById('user-photo').src = user.photoURL;
+                
+                // Show/Hide Add button based on Admin Email
+                const isAdmin = user.email === _admin;
+                document.getElementById('fab-btn').style.display = isAdmin ? 'flex' : 'none';
+                document.getElementById('th-action').style.display = isAdmin ? 'table-cell' : 'none';
+                
                 initApp();
             } else {
                 document.getElementById('login-overlay').style.display = 'flex';
@@ -149,7 +155,6 @@
             }
         });
 
-        // Database listener: Realtime sync
         db.ref('trades').on('value', snapshot => {
             const val = snapshot.val();
             trades = val ? Object.keys(val).map(k => ({id: k, ...val[k]})) : [];
@@ -170,8 +175,10 @@
         function renderData() {
             curYear = document.getElementById('yearSelect').value;
             const target = `${curMonth}-${curYear}`;
+            const isAdmin = auth.currentUser && auth.currentUser.email === _admin;
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
+            
             let tInv = 0, tPnl = 0, wins = 0, count = 0;
 
             trades.filter(t => t.period === target).forEach(t => {
@@ -181,13 +188,13 @@
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><strong>${t.coin}</strong><br><small>${t.lev}</small></td>
+                        <td><strong>${t.coin}</strong><br><small>${t.lev || '1x'}</small></td>
                         <td style="color:${t.side==='LONG'?'var(--success)':'var(--danger)'}; font-weight:700;">${t.side}</td>
                         <td>$${t.invest}</td>
                         <td><span class="badge ${isWin?'win':'loss'}">${t.result}</span></td>
                         <td style="font-weight:700;">${t.pnl}%</td>
                         <td style="color:${dVal>=0?'var(--success)':'var(--danger)'}; font-weight:700;">${dVal>=0?'+':''}$${dVal.toFixed(2)}</td>
-                        <td><span class="material-icons-round" style="cursor:pointer; color:#ccc;" onclick="delTrade('${t.id}')">delete</span></td>
+                        <td style="display:${isAdmin?'table-cell':'none'}"><span class="material-icons-round" style="cursor:pointer; color:#94a3b8;" onclick="delTrade('${t.id}')">delete</span></td>
                     </tr>`;
             });
 
@@ -199,42 +206,34 @@
         }
 
         function saveTrade() {
-            const user = auth.currentUser;
-            if(!user || user.email !== _admin) return alert("Only Shakib can add trades!");
+            if(auth.currentUser.email !== _admin) return alert("Unauthorized!");
 
             const coin = document.getElementById('coinInput').value;
+            const lev = document.getElementById('levInput').value;
             const invest = parseFloat(document.getElementById('investInput').value);
             let pnl = parseFloat(document.getElementById('pnlInput').value);
             const res = document.getElementById('resultInput').value;
 
-            if(!coin || isNaN(invest)) return alert("Sob puron korun!");
+            if(!coin || isNaN(invest) || isNaN(pnl)) return alert("Fill everything!");
             if(res==='LOSS' && pnl > 0) pnl = -pnl;
 
-            document.getElementById('saveBtn').innerText = "Saving...";
+            document.getElementById('saveBtn').innerText = "SAVING...";
             db.ref('trades').push({
-                coin, invest, pnl, result: res,
+                coin: coin, lev: lev || '1x', invest: invest, pnl: pnl, result: res,
                 side: document.getElementById('sideInput').value,
-                lev: document.getElementById('levInput').value || '1x',
                 period: `${curMonth}-${curYear}`,
-                timestamp: Date.now()
+                time: Date.now()
             }).then(() => {
-                document.getElementById('saveBtn').innerText = "Add Trade";
+                document.getElementById('saveBtn').innerText = "SAVE TRADE";
                 closeModal();
                 document.getElementById('coinInput').value = '';
+                document.getElementById('levInput').value = '';
                 document.getElementById('investInput').value = '';
                 document.getElementById('pnlInput').value = '';
-            }).catch(e => alert("Error: " + e.message));
+            });
         }
 
-        function delTrade(id) { 
-            const user = auth.currentUser;
-            if(user && user.email === _admin) {
-                if(confirm("Delete korben?")) db.ref('trades/' + id).remove();
-            } else {
-                alert("Only admin can delete!");
-            }
-        }
-
+        function delTrade(id) { if(confirm("Delete?")) db.ref('trades/' + id).remove(); }
         function openModal() { document.getElementById('tradeModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('tradeModal').style.display = 'none'; }
 
@@ -246,6 +245,7 @@
         }
         const savedTheme = localStorage.getItem('shakib_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
+        document.getElementById('theme-icon').innerText = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
     </script>
 </body>
 </html>
