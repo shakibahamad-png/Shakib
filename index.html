@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     <style>
-        :root{--primary:#8b5cf6;--bg-body:#f8fafc;--card-bg:#ffffff;--text-main:#1e293b;--text-dim:#64748b;--border:#e2e8f0;--success:#10b981;--danger:#ef4444}[data-theme=dark]{--bg-body:#0f172a;--card-bg:#1e293b;--text-main:#f1f5f9;--text-dim:#94a3b8;--border:#334155}*{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif}body{background:var(--bg-body);color:var(--text-main);transition:.3s;min-height:100vh}nav{padding:1rem 5%;display:flex;justify-content:space-between;align-items:center;background:var(--card-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.container{max-width:1100px;margin:1.5rem auto;padding:0 20px}.month-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px;padding:10px;background:var(--card-bg);border-radius:15px;border:1px solid var(--border)}.month-btn{padding:8px 15px;border-radius:10px;border:1px solid var(--border);background:var(--bg-body);color:var(--text-dim);cursor:pointer;font-weight:600}.month-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px}.stat-card{background:var(--card-bg);padding:1.2rem;border-radius:20px;text-align:center;border:1px solid var(--border)}.stat-card .value{font-size:1.4rem;font-weight:800;margin-top:5px}.journal-box{background:var(--card-bg);border-radius:24px;padding:1.5rem;border:1px solid var(--border);overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}td,th{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:.9rem}.badge{padding:4px 8px;border-radius:6px;font-size:.7rem;font-weight:700}.win{background:#d1fae5;color:var(--success)}.loss{background:#fee2e2;color:var(--danger)}.fab{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:var(--primary);color:#fff;border-radius:20px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 20px rgba(139,92,246,.4);transition:.2s}.fab:hover{transform:scale(1.1)}.user-img{width:35px;border-radius:50%;border:2px solid var(--primary);cursor:pointer;display:none}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center}.modal-content{background:var(--card-bg);padding:2rem;border-radius:25px;width:90%;max-width:400px}input,select{width:100%;padding:12px;margin-bottom:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg-body);color:var(--text-main)}
+        :root{--primary:#8b5cf6;--bg-body:#f8fafc;--card-bg:#ffffff;--text-main:#1e293b;--text-dim:#64748b;--border:#e2e8f0;--success:#10b981;--danger:#ef4444}[data-theme=dark]{--bg-body:#0f172a;--card-bg:#1e293b;--text-main:#f1f5f9;--text-dim:#94a3b8;--border:#334155}*{margin:0;padding:0;box-sizing:border-box;font-family:'Plus Jakarta Sans',sans-serif}body{background:var(--bg-body);color:var(--text-main);transition:.3s;min-height:100vh}nav{padding:1rem 5%;display:flex;justify-content:space-between;align-items:center;background:var(--card-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}.container{max-width:1100px;margin:1.5rem auto;padding:0 20px}.month-nav{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px;padding:10px;background:var(--card-bg);border-radius:15px;border:1px solid var(--border)}.month-btn{padding:8px 15px;border-radius:10px;border:1px solid var(--border);background:var(--bg-body);color:var(--text-dim);cursor:pointer;font-weight:600}.month-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin-bottom:25px}.stat-card{background:var(--card-bg);padding:1.2rem;border-radius:20px;text-align:center;border:1px solid var(--border)}.stat-card .value{font-size:1.4rem;font-weight:800;margin-top:5px}.journal-box{background:var(--card-bg);border-radius:24px;padding:1.5rem;border:1px solid var(--border);overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px}td,th{text-align:left;padding:12px;border-bottom:1px solid var(--border);font-size:.9rem}.badge{padding:4px 8px;border-radius:6px;font-size:.7rem;font-weight:700}.win{background:#d1fae5;color:var(--success)}.loss{background:#fee2e2;color:var(--danger)}.fab{position:fixed;bottom:30px;right:30px;width:60px;height:60px;background:var(--primary);color:#fff;border-radius:20px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 10px 20px rgba(139,92,246,.4);transition:.2s}.fab:hover{transform:scale(1.1)}.user-img{width:35px;border-radius:50%;border:2px solid var(--primary);cursor:pointer;display:none}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;align-items:center;justify-content:center}.modal-content{background:var(--card-bg);padding:2rem;border-radius:25px;width:90%;max-width:400px}input,select{width:100%;padding:12px;margin-bottom:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg-body);color:var(--text-main)}#lBtn{display:none}
     </style>
 </head>
 <body>
@@ -17,7 +17,7 @@
         <h2 style="font-size: 1.1rem;">Shakib Journal</h2>
         <div style="display: flex; align-items: center; gap: 15px;">
             <span class="material-icons-round" style="cursor:pointer; color:var(--primary)" onclick="_0x4f2a()" id="theme-icon">dark_mode</span>
-            <select id="yS" style="width: auto; margin:0; padding:5px; font-weight:700;" onchange="_0x1b3c()">
+            <select id="yS" style="width: auto; margin:0; padding:5px; font-weight:700; background:var(--bg-body); color:var(--text-main); border-radius:8px;" onchange="_0x1b3c()">
                 <option value="2025">2025</option><option value="2026" selected>2026</option>
             </select>
             <button id="lBtn" onclick="_0x2d1e()" style="background:var(--primary); color:white; border:none; padding:6px 15px; border-radius:10px; cursor:pointer; font-weight:600;">Admin</button>
@@ -25,18 +25,16 @@
         </div>
     </nav>
     <div class="container">
-        <div class="month-nav" id="mN"></div>
+        <div id="mN" class="month-nav"></div>
         <div class="stats-grid">
             <div class="stat-card"><h3>Trades</h3><div class="value" id="s1">0</div></div>
             <div class="stat-card"><h3>Win Rate</h3><div class="value" id="s2" style="color:var(--success)">0%</div></div>
-            <div class="stat-card"><h3>Invested</h3><div class="value" id="s3">$0</div></div>
+            <div class="stat-card" id="c3"><h3>Invested</h3><div class="value" id="s3">$0</div></div>
             <div class="stat-card"><h3>Net Profit</h3><div class="value" id="s4">$0</div></div>
         </div>
         <div class="journal-box">
             <table>
-                <thead>
-                    <tr><th>Coin</th><th>Side</th><th>Invest</th><th>Result</th><th>PnL%</th><th>Profit</th><th id="ah" style="display:none;">Action</th></tr>
-                </thead>
+                <thead id="tH"></thead>
                 <tbody id="tB"></tbody>
             </table>
         </div>
@@ -56,7 +54,6 @@
     </div>
 
     <script>
-        // Hacked/Obfuscated Logic
         const _0xad = "faltoshakib@gmail.com";
         const _0xfc = {
             apiKey: "AIzaSyA1Y77HBNw1HRpNGDbmZkiDbddm_pX-Yjw",
@@ -70,14 +67,22 @@
         firebase.initializeApp(_0xfc);
         const _0xau = firebase.auth();
         const _0xma = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let _0xda = JSON.parse(localStorage.getItem('sk_tr_f')) || [];
+        let _0xda = JSON.parse(localStorage.getItem('sk_tr_v4')) || [];
         let _0xcm = _0xma[new Date().getMonth()];
+
+        // Hidden login trigger
+        window.addEventListener('keydown', (e) => {
+            if(e.ctrlKey && e.shiftKey && e.key === 'A') {
+                document.getElementById('lBtn').style.display = 'block';
+            }
+        });
 
         _0xau.onAuthStateChanged(_0xu => {
             const _0xisa = _0xu && _0xu.email === _0xad;
             document.getElementById('af').style.display = _0xisa ? 'flex' : 'none';
             document.getElementById('uP').style.display = _0xisa ? 'block' : 'none';
-            document.getElementById('lBtn').style.display = _0xisa ? 'none' : 'block';
+            document.getElementById('lBtn').style.display = 'none';
+            document.getElementById('c3').style.display = _0xisa ? 'block' : 'none';
             if(_0xisa) document.getElementById('uP').src = _0xu.photoURL;
             _0x1b3c();
         });
@@ -101,21 +106,32 @@
             const _0xy = document.getElementById('yS').value;
             const _0xt = `${_0xcm}-${_0xy}`;
             const _0xtb = document.getElementById('tB');
-            document.getElementById('ah').style.display = _0xisa ? 'table-cell' : 'none';
+            const _0xth = document.getElementById('tH');
+
+            _0xth.innerHTML = `<tr><th>Coin</th><th>Side</th>${_0xisa?'<th>Invest</th>':''}<th>Result</th><th>PnL%</th><th>Profit</th>${_0xisa?'<th>Action</th>':''}</tr>`;
+            
             _0xtb.innerHTML = '';
             let _0xi=0, _0xp=0, _0xw=0, _0xc=0;
-            _0xda.filter(_0xd => _0xd.period === _0xt).forEach((_0xd, _0xidx) => {
+            _0xda.filter(_0xd => _0xd.period === _0xt).forEach((_0xd) => {
                 const _0isw = _0xd.result === 'WIN';
                 const _0v = (_0xd.invest * (_0xd.pnl / 100));
                 if(_0isw) _0xw++; _0xi += parseFloat(_0xd.invest); _0xp += _0v; _0xc++;
-                _0xtb.innerHTML += `<tr><td><strong>${_0xd.coin}</strong></td><td style="color:${_0xd.side==='LONG'?'var(--success)':'var(--danger)'};font-weight:700">${_0xd.side}</td><td>$${_0xd.invest}</td><td><span class="badge ${_0isw?'win':'loss'}">${_0xd.result}</span></td><td style="font-weight:700">${_0xd.pnl}%</td><td style="color:${_0v>=0?'var(--success)':'var(--danger)'};font-weight:700">$${_0v.toFixed(2)}</td>${_0xisa ? `<td><span class="material-icons-round" style="cursor:pointer;color:#94a3b8" onclick="_0xdead('${_0xda.indexOf(_0xd)}')">delete</span></td>` : ''}</tr>`;
+                _0xtb.innerHTML += `<tr>
+                    <td><strong>${_0xd.coin}</strong></td>
+                    <td style="color:${_0xd.side==='LONG'?'var(--success)':'var(--danger)'};font-weight:700">${_0xd.side}</td>
+                    ${_0xisa ? `<td>$${_0xd.invest}</td>` : ''}
+                    <td><span class="badge ${_0isw?'win':'loss'}">${_0xd.result}</span></td>
+                    <td style="font-weight:700">${_0xd.pnl}%</td>
+                    <td style="color:${_0v>=0?'var(--success)':'var(--danger)'};font-weight:700">$${_0v.toFixed(2)}</td>
+                    ${_0xisa ? `<td><span class="material-icons-round" style="cursor:pointer;color:#94a3b8" onclick="_0xdead('${_0xda.indexOf(_0xd)}')">delete</span></td>` : ''}
+                </tr>`;
             });
             document.getElementById('s1').innerText = _0xc;
             document.getElementById('s2').innerText = _0xc > 0 ? ((_0xw/_0xc)*100).toFixed(1)+'%' : '0%';
             document.getElementById('s3').innerText = '$'+_0xi.toFixed(2);
             document.getElementById('s4').innerText = (_0xp>=0?'+':'') + '$'+_0xp.toFixed(2);
             document.getElementById('s4').style.color = _0xp>=0 ? 'var(--success)' : 'var(--danger)';
-            localStorage.setItem('sk_tr_f', JSON.stringify(_0xda));
+            localStorage.setItem('sk_tr_v4', JSON.stringify(_0xda));
         }
 
         function _0x6f1d() {
