@@ -25,7 +25,7 @@
         .month-btn { padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-dim); cursor: pointer; font-weight: 600; font-size: 0.8rem; }
         .month-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: var(--card-bg); padding: 1.2rem; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
         .stat-card h3 { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
         .stat-card .value { font-size: 1.3rem; font-weight: 800; }
@@ -48,6 +48,7 @@
         .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
         
         .login-btn-nav { background: var(--primary); color: white; padding: 6px 15px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+        .admin-only { display: none; } /* Class to hide admin elements from public */
     </style>
 </head>
 <body>
@@ -68,19 +69,31 @@
 
         <div class="container">
             <div class="month-nav" id="monthNav"></div>
+            
             <div class="stats-grid">
-                <div class="stat-card"><h3>Trades</h3><div class="value" id="s-count">0</div></div>
+                <div class="stat-card"><h3>Total Trades</h3><div class="value" id="s-count">0</div></div>
                 <div class="stat-card"><h3>Win Rate</h3><div class="value" id="s-rate" style="color:var(--success)">0%</div></div>
-                <div class="stat-card"><h3>Invested</h3><div class="value" id="s-invest">$0</div></div>
-                <div class="stat-card"><h3>Net Profit</h3><div class="value" id="s-profit">$0</div></div>
+                <div class="stat-card admin-only" id="admin-invest-card"><h3>Total Invested</h3><div class="value" id="s-invest">$0</div></div>
+                <div class="stat-card"><h3>Net Profit (PnL)</h3><div class="value" id="s-profit">$0</div></div>
             </div>
+
             <div class="journal-box">
                 <table>
-                    <thead><tr><th>Coin & Lev</th><th>Side</th><th>Invest</th><th>Result</th><th>PnL%</th><th>Profit ($)</th><th id="th-action" style="display:none">Action</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Coin & Lev</th>
+                            <th>Side</th>
+                            <th class="admin-only">Invest</th> <th>Result</th>
+                            <th>PnL%</th>
+                            <th>Profit ($)</th>
+                            <th id="th-action" style="display:none">Action</th>
+                        </tr>
+                    </thead>
                     <tbody id="tableBody"></tbody>
                 </table>
             </div>
         </div>
+
         <div class="fab" id="fab-btn" onclick="openModal()"><span class="material-icons-round">add</span></div>
     </div>
 
@@ -130,13 +143,18 @@
 
         auth.onAuthStateChanged(user => {
             const authDiv = document.getElementById('auth-section');
-            if(user && user.email === _admin) {
-                // Admin UI
+            const isAdmin = user && user.email === _admin;
+            
+            // Toggle Admin Elements
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? 'block' : 'none');
+            // Table columns need 'table-cell' instead of 'block'
+            document.querySelectorAll('th.admin-only, td.admin-only').forEach(el => el.style.display = isAdmin ? 'table-cell' : 'none');
+
+            if(isAdmin) {
                 authDiv.innerHTML = `<img src="${user.photoURL}" style="width:35px; border-radius:50%; border:2px solid var(--primary); cursor:pointer;" onclick="logout()">`;
                 document.getElementById('fab-btn').style.display = 'flex';
                 document.getElementById('th-action').style.display = 'table-cell';
             } else {
-                // Public UI
                 authDiv.innerHTML = `<button class="login-btn-nav" onclick="login()">ADMIN LOGIN</button>`;
                 document.getElementById('fab-btn').style.display = 'none';
                 document.getElementById('th-action').style.display = 'none';
@@ -144,7 +162,6 @@
             renderData();
         });
 
-        // Realtime Data Fetch (Publicly accessible if Rules allow)
         db.ref('trades').on('value', snapshot => {
             const val = snapshot.val();
             trades = val ? Object.keys(val).map(k => ({id: k, ...val[k]})) : [];
@@ -175,14 +192,19 @@
             filtered.forEach(t => {
                 const isWin = t.result === 'WIN';
                 const pnlNum = parseFloat(t.pnl) || 0;
-                const dVal = (parseFloat(t.invest) * (pnlNum / 100));
-                if(isWin) wins++; tInv += parseFloat(t.invest); tPnl += dVal; count++;
+                const investNum = parseFloat(t.invest) || 0;
+                const dVal = (investNum * (pnlNum / 100));
+                
+                if(isWin) wins++; 
+                tInv += investNum; 
+                tPnl += dVal; 
+                count++;
 
                 tbody.innerHTML += `
                     <tr>
                         <td><strong>${t.coin}</strong><br><small style="color:var(--text-dim)">${t.lev || '1x'}</small></td>
                         <td style="color:${t.side==='LONG'?'var(--success)':'var(--danger)'}; font-weight:700;">${t.side}</td>
-                        <td>$${t.invest}</td>
+                        <td class="admin-only" style="display:${isAdmin?'table-cell':'none'}">$${investNum}</td>
                         <td><span class="badge ${isWin?'win':'loss'}">${t.result}</span></td>
                         <td style="font-weight:700;">${pnlNum}%</td>
                         <td style="color:${dVal>=0?'var(--success)':'var(--danger)'}; font-weight:700;">${dVal>=0?'+':''}$${dVal.toFixed(2)}</td>
@@ -198,7 +220,7 @@
         }
 
         function saveTrade() {
-            if(!auth.currentUser || auth.currentUser.email !== _admin) return alert("Shudhu Shakib data add korte parbe!");
+            if(!auth.currentUser || auth.currentUser.email !== _admin) return alert("Unauthorized!");
             const coin = document.getElementById('coinInput').value.toUpperCase();
             const lev = document.getElementById('levInput').value || '1x';
             const invest = parseFloat(document.getElementById('investInput').value);
