@@ -18,7 +18,7 @@
         <h2 style="font-size: 1.1rem; cursor:pointer;" onclick="location.reload()">Shakib Journal</h2>
         <div style="display: flex; align-items: center; gap: 10px;">
             <span class="material-icons-round" style="cursor:pointer; color:var(--primary)" onclick="_t()">dark_mode</span>
-            <select id="yS" style="width: 90px; height: 35px; cursor:pointer; border-radius:8px;" onchange="_r()">
+            <select id="yS" style="width: 90px; height: 35px; cursor:pointer; background:var(--card-bg); color:var(--text-main); border:1px solid var(--border); border-radius:8px; display:inline-block;" onchange="_r()">
                 <option value="2025">2025</option><option value="2026" selected>2026</option>
             </select>
             <button id="lBtn" onclick="_login()" style="background:var(--primary); color:white; border:none; padding:6px 12px; border-radius:10px; cursor:pointer; font-weight:600;">Admin</button>
@@ -43,13 +43,13 @@
 
     <div class="modal" id="tM">
         <div class="modal-content">
-            <h3>New Trade</h3><br>
-            <input type="text" id="in1" placeholder="Coin (e.g. BTC)">
+            <h3>New Trade Entry</h3><br>
+            <input type="text" id="in1" placeholder="Coin Name (e.g. BTC)">
             <select id="in2"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
             <input type="number" id="in3" placeholder="Investment $">
             <select id="in4"><option value="WIN">WIN</option><option value="LOSS">LOSS</option></select>
             <input type="number" id="in5" placeholder="PnL %">
-            <button id="sB" onclick="_save()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700;">SAVE DATA</button>
+            <button id="sBtn" onclick="_save()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700;">SAVE DATA</button>
             <button onclick="_close()" style="width:100%; background:none; border:none; margin-top:10px; cursor:pointer; color:var(--text-dim);">CANCEL</button>
         </div>
     </div>
@@ -73,6 +73,7 @@
         let _data = [];
         let _cMonth = _mArr[new Date().getMonth()];
 
+        // Ctrl + Shift + A to reveal Admin Login
         window.addEventListener('keydown', (e) => { if(e.ctrlKey && e.shiftKey && e.key === 'A') document.getElementById('lBtn').style.display = 'block'; });
 
         _au.onAuthStateChanged(u => {
@@ -84,6 +85,7 @@
             _r();
         });
 
+        // Realtime Data Fetching
         _db.ref('trades').on('value', s => {
             const v = s.val();
             _data = v ? Object.keys(v).map(k => ({id:k, ...v[k]})) : [];
@@ -105,7 +107,7 @@
             let _i=0, _p=0, _w=0, _c=0;
             _data.filter(d => d.period === target).forEach(d => {
                 const win = d.result === 'WIN';
-                const pVal = (d.invest * (d.pnl / 100));
+                const pVal = (parseFloat(d.invest) * (parseFloat(d.pnl) / 100));
                 if(win) _w++; _i += parseFloat(d.invest); _p += pVal; _c++;
                 tb.innerHTML += `<tr><td><strong>${d.coin}</strong></td><td style="color:${d.side==='LONG'?'var(--success)':'var(--danger)'};font-weight:700">${d.side}</td>${isA?`<td>$${d.invest}</td>`:''}<td><span class="badge ${win?'win':'loss'}">${d.result}</span></td><td style="font-weight:700">${d.pnl}%</td><td style="color:${pVal>=0?'var(--success)':'var(--danger)'};font-weight:700">$${pVal.toFixed(2)}</td>${isA?`<td><span class="material-icons-round" style="cursor:pointer;color:#94a3b8" onclick="_del('${d.id}')">delete</span></td>`:''}</tr>`;
             });
@@ -116,29 +118,42 @@
             document.getElementById('v4').style.color = _p>=0 ? 'var(--success)' : 'var(--danger)';
         }
 
+        // --- KEY SAVE FUNCTION FIX ---
         function _save() {
-            if(!_au.currentUser) return alert("Please Login as Admin first!");
-            const c = document.getElementById('in1').value, i = parseFloat(document.getElementById('in3').value), r = document.getElementById('in4').value, p = parseFloat(document.getElementById('in5').value);
-            if(!c || isNaN(i) || isNaN(p)) return alert("Sob puron korun!");
+            if(!_au.currentUser) return alert("Error: Login First!");
+            const c = document.getElementById('in1').value, i = parseFloat(document.getElementById('in3').value), r = document.getElementById('in4').value;
+            let p = parseFloat(document.getElementById('in5').value);
             
-            const btn = document.getElementById('sB');
+            if(!c || isNaN(i) || isNaN(p)) return alert("Fill all fields correctly!");
+            if(r === 'LOSS' && p > 0) p = -p;
+
+            const btn = document.getElementById('sBtn');
             btn.disabled = true; btn.innerText = "SAVING...";
 
-            _db.ref('trades').push({
-                coin: c, invest: i, pnl: (r === 'LOSS' && p > 0) ? -p : p,
-                result: r, side: document.getElementById('in2').value,
+            const newTrade = {
+                coin: c,
+                invest: i,
+                pnl: p,
+                result: r,
+                side: document.getElementById('in2').value,
                 period: `${_cMonth}-${document.getElementById('yS').value}`,
-                time: Date.now()
-            }).then(() => {
+                time: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            _db.ref('trades').push(newTrade)
+            .then(() => {
                 btn.disabled = false; btn.innerText = "SAVE DATA";
                 _close();
-            }).catch(e => {
-                alert("Permission Error! Check Firebase Rules.");
+                document.getElementById('in1').value = ""; document.getElementById('in3').value = ""; document.getElementById('in5').value = "";
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Database Error: Check Firebase Rules!");
                 btn.disabled = false; btn.innerText = "SAVE DATA";
             });
         }
 
-        function _del(id) { if(confirm("Delete?")) _db.ref('trades/'+id).remove(); }
+        function _del(id) { if(confirm("Delete Trade?")) _db.ref('trades/'+id).remove(); }
         function _open() { document.getElementById('tM').style.display = 'flex'; }
         function _close() { document.getElementById('tM').style.display = 'none'; }
         function _t() {
