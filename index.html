@@ -12,215 +12,118 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
 
     <style>
-        :root {
-            --primary: #8b5cf6;
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-dim: #64748b;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
-
-        [data-theme="dark"] {
-            --bg-body: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-            --border: #334155;
-        }
-
+        :root { --primary: #8b5cf6; --bg-body: #f8fafc; --card-bg: #ffffff; --text-main: #1e293b; --text-dim: #64748b; --border: #e2e8f0; --success: #10b981; --danger: #ef4444; }
+        [data-theme="dark"] { --bg-body: #0f172a; --card-bg: #1e293b; --text-main: #f1f5f9; --text-dim: #94a3b8; --border: #334155; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg-body); color: var(--text-main); transition: 0.3s; min-height: 100vh; }
-
-        /* Login Page */
-        #login-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-            display: flex; align-items: center; justify-content: center; z-index: 10000;
-        }
-        .login-box {
-            background: white; padding: 40px; border-radius: 30px; text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); width: 90%; max-width: 400px;
-        }
-        .google-btn {
-            background: white; border: 1px solid #ddd; padding: 12px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; font-weight: 700; cursor: pointer; margin-top: 20px; transition: 0.2s;
-            color: #1e293b;
-        }
-
-        /* App Layout */
-        #main-app { display: none; }
-        nav { 
-            padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; 
-            background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
-        }
-        .nav-right { display: flex; align-items: center; gap: 15px; }
-
+        nav { padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
         .container { max-width: 1100px; margin: 1.5rem auto; padding: 0 20px; }
-
-        /* Month Nav */
         .month-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px; padding: 10px; background: var(--card-bg); border-radius: 15px; border: 1px solid var(--border); }
         .month-btn { padding: 8px 15px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-dim); cursor: pointer; font-weight: 600; }
         .month-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
-
-        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
         .stat-card { background: var(--card-bg); padding: 1.2rem; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .stat-card h3 { font-size: 0.7rem; text-transform: uppercase; color: var(--text-dim); }
         .stat-card .value { font-size: 1.4rem; font-weight: 800; margin-top: 5px; }
-
-        /* Table */
         .journal-box { background: var(--card-bg); border-radius: 24px; padding: 1.5rem; border: 1px solid var(--border); overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { text-align: left; padding: 12px; color: var(--text-dim); font-size: 0.8rem; border-bottom: 2px solid var(--border); }
-        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
         .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; }
         .win { background: #d1fae5; color: var(--success); }
         .loss { background: #fee2e2; color: var(--danger); }
-
-        .year-select { padding: 8px; border-radius: 8px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); font-weight: 700; outline: none; }
-        .theme-switch { cursor: pointer; color: var(--primary); font-size: 24px; }
-        .user-img { width: 35px; border-radius: 50%; border: 2px solid var(--primary); cursor: pointer; }
-
-        /* Modal */
+        .fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); transition: 0.2s; }
+        .fab:hover { transform: scale(1.1); }
+        .user-img { width: 35px; border-radius: 50%; border: 2px solid var(--primary); cursor: pointer; display: none; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 25px; width: 90%; max-width: 400px; color: var(--text-main); border: 1px solid var(--border); }
-        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); outline: none; }
-        .btn-save { background: var(--primary); color: white; border: none; padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
-
-        .fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 10px 20px rgba(139, 92, 246, 0.4); }
+        .modal-content { background: var(--card-bg); padding: 2rem; border-radius: 25px; width: 90%; max-width: 400px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-body); color: var(--text-main); }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-box">
-            <h1 style="color: #1e293b;">Shakib's Journal</h1>
-            <p style="color: #64748b; margin-top: 5px;">Manage your trades securely</p>
-            <button class="google-btn" onclick="login()">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18">
-                Login with Google
-            </button>
+    <nav>
+        <h2 style="font-size: 1.1rem; letter-spacing: -0.5px;">Shakib Journal</h2>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span class="material-icons-round" style="cursor:pointer; color:var(--primary)" onclick="toggleTheme()" id="theme-icon">dark_mode</span>
+            <select id="yearSelect" style="width: auto; margin:0; padding:5px; font-weight:700;" onchange="renderData()">
+                <option value="2025">2025</option><option value="2026" selected>2026</option>
+            </select>
+            <button id="login-btn-nav" onclick="login()" style="background:var(--primary); color:white; border:none; padding:6px 15px; border-radius:10px; cursor:pointer; font-weight:600;">Admin</button>
+            <img id="user-photo" class="user-img" onclick="logout()" title="Logout">
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="month-nav" id="monthNav"></div>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Trades</h3><div class="value" id="s-count">0</div></div>
+            <div class="stat-card"><h3>Win Rate</h3><div class="value" id="s-rate" style="color:var(--success)">0%</div></div>
+            <div class="stat-card"><h3>Invested</h3><div class="value" id="s-invest">$0</div></div>
+            <div class="stat-card"><h3>Net Profit</h3><div class="value" id="s-profit">$0</div></div>
+        </div>
+
+        <div class="journal-box">
+            <table>
+                <thead>
+                    <tr><th>Coin</th><th>Side</th><th>Invest</th><th>Result</th><th>PnL%</th><th>Profit</th><th id="action-header" style="display:none;">Action</th></tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
         </div>
     </div>
 
-    <div id="main-app">
-        <nav>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <h2 style="font-size: 1.2rem;">Shakib Journal</h2>
-            </div>
-            
-            <div class="nav-right">
-                <span class="material-icons-round theme-switch" onclick="toggleTheme()" id="theme-icon">dark_mode</span>
-                <select id="yearSelect" class="year-select" onchange="renderData()"></select>
-                <img id="user-photo" class="user-img" src="" title="Logout" onclick="logout()">
-            </div>
-        </nav>
-
-        <div class="container">
-            <div class="month-nav" id="monthNav"></div>
-
-            <div class="stats-grid">
-                <div class="stat-card"><h3>Total Trades</h3><div class="value" id="s-count">0</div></div>
-                <div class="stat-card"><h3>Win Rate</h3><div class="value" id="s-rate" style="color:var(--success)">0%</div></div>
-                <div class="stat-card"><h3>Invested</h3><div class="value" id="s-invest">$0</div></div>
-                <div class="stat-card"><h3>Net Profit</h3><div class="value" id="s-profit">$0</div></div>
-            </div>
-
-            <div class="journal-box">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Coin & Lev</th>
-                            <th>Side</th>
-                            <th>Investment</th>
-                            <th>Result</th>
-                            <th>PnL %</th>
-                            <th>Profit ($)</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="fab" onclick="openModal()"><span class="material-icons-round">add</span></div>
-    </div>
+    <div class="fab" id="admin-fab" onclick="openModal()"><span class="material-icons-round">add</span></div>
 
     <div class="modal" id="tradeModal">
         <div class="modal-content">
-            <h2 style="margin-bottom:15px">New Trade Entry</h2>
-            <input type="text" id="coinInput" placeholder="e.g., BTC/USDT">
-            <div style="display: flex; gap: 10px;">
-                <select id="sideInput"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
-                <input type="text" id="levInput" placeholder="Leverage (20x)">
-            </div>
+            <h3 style="margin-bottom: 15px;">New Trade Entry</h3>
+            <input type="text" id="coinInput" placeholder="e.g., SOL/USDT">
+            <select id="sideInput"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select>
             <input type="number" id="investInput" placeholder="Investment ($)">
-            <div style="display: flex; gap: 10px;">
-                <select id="resultInput"><option value="WIN">WIN</option><option value="LOSS">LOSS</option></select>
-                <input type="number" id="pnlInput" placeholder="PnL % (Total)">
-            </div>
-            <button class="btn-save" onclick="saveTrade()">Add Trade</button>
-            <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; color:var(--text-dim); cursor:pointer;">Cancel</button>
+            <select id="resultInput"><option value="WIN">WIN</option><option value="LOSS">LOSS</option></select>
+            <input type="number" id="pnlInput" placeholder="PnL %">
+            <button onclick="saveTrade()" style="width:100%; padding:14px; background:var(--primary); color:white; border:none; border-radius:12px; cursor:pointer; font-weight:700;">Add to Journal</button>
+            <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; cursor:pointer; color:var(--text-dim);">Cancel</button>
         </div>
     </div>
 
     <script>
-        // --- YOUR FIREBASE CONFIG ---
+        // --- ADMIN & FIREBASE CONFIG ---
+        const adminEmail = "faltoshakib@gmail.com"; 
+
         const firebaseConfig = {
             apiKey: "AIzaSyA1Y77HBNw1HRpNGDbmZkiDbddm_pX-Yjw",
             authDomain: "shakib-e148d.firebaseapp.com",
             projectId: "shakib-e148d",
             storageBucket: "shakib-e148d.firebasestorage.app",
             messagingSenderId: "717674222128",
-            appId: "1:717674222128:web:ef6d239273aea8121d13f5",
-            measurementId: "G-4GHX0PT2QN"
+            appId: "1:717674222128:web:ef6d239273aea8121d13f5"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // App Data
         const monthsArr = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let years = JSON.parse(localStorage.getItem('shakib_years')) || ["2025", "2026"];
-        let trades = JSON.parse(localStorage.getItem('shakib_trades_v2')) || [];
-        let curYear = "2026";
+        let trades = JSON.parse(localStorage.getItem('shakib_trades_final')) || [];
         let curMonth = monthsArr[new Date().getMonth()];
 
-        // Auth Logic
-        function login() { 
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
-        }
-        function logout() { if(confirm("Logout korben?")) auth.signOut(); }
-
+        // Auth State
         auth.onAuthStateChanged(user => {
-            if(user) {
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('main-app').style.display = 'block';
-                document.getElementById('user-photo').src = user.photoURL;
-                initApp();
-            } else {
-                document.getElementById('login-overlay').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
-            }
+            const isAdmin = user && user.email === adminEmail;
+            document.getElementById('admin-fab').style.display = isAdmin ? 'flex' : 'none';
+            document.getElementById('user-photo').style.display = isAdmin ? 'block' : 'none';
+            document.getElementById('login-btn-nav').style.display = isAdmin ? 'none' : 'block';
+            if(isAdmin) document.getElementById('user-photo').src = user.photoURL;
+            renderData();
         });
 
+        function login() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+        function logout() { if(confirm("Logout korben?")) auth.signOut(); }
+
         // App Logic
-        function initApp() {
-            const ySel = document.getElementById('yearSelect');
-            ySel.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join('');
-            ySel.value = curYear;
-            
+        function initNav() {
             const mNav = document.getElementById('monthNav');
             mNav.innerHTML = monthsArr.map(m => `<button class="month-btn ${m===curMonth?'active':''}" onclick="setMonth('${m}')">${m}</button>`).join('');
-            renderData();
         }
 
         function setMonth(m) {
@@ -230,39 +133,38 @@
         }
 
         function renderData() {
-            curYear = document.getElementById('yearSelect').value;
-            const target = `${curMonth}-${curYear}`;
+            const isAdmin = auth.currentUser && auth.currentUser.email === adminEmail;
+            const year = document.getElementById('yearSelect').value;
+            const target = `${curMonth}-${year}`;
             const tbody = document.getElementById('tableBody');
+            document.getElementById('action-header').style.display = isAdmin ? 'table-cell' : 'none';
             tbody.innerHTML = '';
 
             let tInv = 0, tPnl = 0, wins = 0, count = 0;
 
-            trades.filter(t => t.period === target).forEach(t => {
+            trades.filter(t => t.period === target).forEach((t, i) => {
                 const isWin = t.result === 'WIN';
                 const dVal = (t.invest * (t.pnl / 100));
-                if(isWin) wins++;
-                tInv += parseFloat(t.invest);
-                tPnl += dVal;
-                count++;
+                if(isWin) wins++; tInv += parseFloat(t.invest); tPnl += dVal; count++;
 
                 tbody.innerHTML += `
                     <tr>
-                        <td><strong>${t.coin}</strong><br><small>${t.lev}</small></td>
+                        <td><strong>${t.coin}</strong></td>
                         <td style="color:${t.side==='LONG'?'var(--success)':'var(--danger)'}; font-weight:700;">${t.side}</td>
                         <td>$${t.invest}</td>
                         <td><span class="badge ${isWin?'win':'loss'}">${t.result}</span></td>
                         <td style="font-weight:700;">${t.pnl}%</td>
-                        <td style="color:${dVal>=0?'var(--success)':'var(--danger)'}; font-weight:700;">${dVal>=0?'+':''}$${dVal.toFixed(2)}</td>
-                        <td><span class="material-icons-round" style="cursor:pointer; color:#ccc;" onclick="delTrade(${trades.indexOf(t)})">delete</span></td>
+                        <td style="color:${dVal>=0?'var(--success)':'var(--danger)'}; font-weight:700;">$${dVal.toFixed(2)}</td>
+                        ${isAdmin ? `<td><span class="material-icons-round" style="cursor:pointer;color:#94a3b8" onclick="delTrade(${trades.indexOf(t)})">delete</span></td>` : ''}
                     </tr>`;
             });
 
             document.getElementById('s-count').innerText = count;
             document.getElementById('s-rate').innerText = count > 0 ? ((wins/count)*100).toFixed(1)+'%' : '0%';
             document.getElementById('s-invest').innerText = '$'+tInv.toFixed(2);
-            document.getElementById('s-profit').innerText = (tPnl>=0?'+':'')+'$'+tPnl.toFixed(2);
+            document.getElementById('s-profit').innerText = (tPnl>=0?'+':'') + '$'+tPnl.toFixed(2);
             document.getElementById('s-profit').style.color = tPnl>=0 ? 'var(--success)' : 'var(--danger)';
-            localStorage.setItem('shakib_trades_v2', JSON.stringify(trades));
+            localStorage.setItem('shakib_trades_final', JSON.stringify(trades));
         }
 
         function saveTrade() {
@@ -270,18 +172,10 @@
             const invest = parseFloat(document.getElementById('investInput').value);
             let pnl = parseFloat(document.getElementById('pnlInput').value);
             const res = document.getElementById('resultInput').value;
-
             if(!coin || isNaN(invest)) return alert("Sob puron korun!");
             if(res==='LOSS' && pnl > 0) pnl = -pnl;
-            
-            trades.unshift({
-                coin, invest, pnl, result: res, 
-                side: document.getElementById('sideInput').value,
-                lev: document.getElementById('levInput').value || '1x',
-                period: `${curMonth}-${curYear}`
-            });
+            trades.unshift({ coin, invest, pnl, result: res, side: document.getElementById('sideInput').value, period: `${curMonth}-${document.getElementById('yearSelect').value}` });
             renderData(); closeModal();
-            // Clear inputs
             document.getElementById('coinInput').value = '';
             document.getElementById('investInput').value = '';
             document.getElementById('pnlInput').value = '';
@@ -290,18 +184,20 @@
         function delTrade(i) { if(confirm("Delete korben?")) { trades.splice(i, 1); renderData(); } }
         function openModal() { document.getElementById('tradeModal').style.display = 'flex'; }
         function closeModal() { document.getElementById('tradeModal').style.display = 'none'; }
-
-        // Theme Toggle Logic
+        
         function toggleTheme() {
             const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', theme);
             document.getElementById('theme-icon').innerText = theme === 'dark' ? 'light_mode' : 'dark_mode';
             localStorage.setItem('shakib_theme', theme);
         }
-
+        
         const savedTheme = localStorage.getItem('shakib_theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
         document.getElementById('theme-icon').innerText = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
+
+        initNav();
+        renderData();
     </script>
 </body>
 </html>
